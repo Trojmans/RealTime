@@ -1,0 +1,1 @@
+This spigot plugin requires ProtocolLib
