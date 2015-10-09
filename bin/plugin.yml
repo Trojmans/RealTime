@@ -1,0 +1,11 @@
+name: RealTime
+version: 2.0
+description: sets the time in minecraft to the real time
+author: Trojmans
+main: nl.trojmans.realtime.RealTime
+softdepend: [ProtocolLib]
+
+commands:
+    realtimereloadconfig:
+        description: reloading the config RealTime
+        usage: /<command>
