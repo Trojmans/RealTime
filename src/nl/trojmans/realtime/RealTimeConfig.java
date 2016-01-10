@@ -24,6 +24,7 @@ public class RealTimeConfig {
 			for(Player p : Bukkit.getOnlinePlayers()) if(p.isOp()) p.sendMessage(ChatColor.RED + "");
 		}
 	}
+	@SuppressWarnings("unchecked")
 	public boolean reload(){
 		try{
 			inEveryWorldEnabled = config.getBoolean("inEveryWorldEnabled");
@@ -31,7 +32,7 @@ public class RealTimeConfig {
 			timeFormatVersion = RealTimeFormatter.version.valueOf(config.getString("timeFormatVersion"));
 			return true;
 		}catch(Exception e){//Config is invalid
-			for(String variables : config.getKeys(false)){//Clearing configs
+			for(String variables : config.getKeys(false)){
 				config.set(variables, null);
 			}
 			plugin.saveDefaultConfig();

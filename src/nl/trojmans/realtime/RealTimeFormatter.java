@@ -6,37 +6,33 @@ import java.util.TimeZone;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.florianmski.suncalc.SunCalc;
-import com.florianmski.suncalc.models.SunPosition;
-
 public class RealTimeFormatter {
 	
 	private String nms = "net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ".";
+	private AzimuthFormatter azimuthFormatter = new AzimuthFormatter();
 	
 	@SuppressWarnings("static-access")
 	public Object format(RealTimeUser user) throws Exception{
 		Calendar cal = Calendar.getInstance();
 		Player player = user.getPlayer();
-		double lat = user.getLatitude();
-		double lon = user.getLongitude();
-		SunPosition position = SunCalc.getSunPosition(cal, lat, lon);
-		double azimuth = position.getAzimuth();
-		long time = (int) azimuth / 360 * 24000;
+		double altitude = azimuthFormatter.getAzimuth(user);
+		double time = ( ( (altitude) % 360) / 360 ) * 24000;
 		long worldTime = player.getWorld().getFullTime();
-		worldTime -= worldTime - (worldTime % 24000);
+		worldTime -= (worldTime % 192000);
 		worldTime += time;
 		int moonPhase = moonPhase(cal.get(cal.YEAR),cal.get(cal.MONTH),cal.get(cal.DAY_OF_MONTH));
+		
 		worldTime += moonPhase * 24000;
 		
 		Object packet = Class.forName(nms + "PacketPlayOutUpdateTime")
-				.getConstructor(long.class,long.class,boolean.class).newInstance(worldTime, time,false);
+				.getConstructor(long.class,long.class,boolean.class).newInstance(worldTime, (long) time,false);
+		
 		return packet;
 	}
     private static final int    day_year[] = { -1, -1, 30, 58, 89, 119, 
         150, 180, 211, 241, 272, 
         303, 333 };
     public int  moonPhase(int year, int month, int day) {
-        
         int             phase;          // Moon phase
         int             cent;           // Century number (1979 = 20)
         int             epact;          // Age of the moon on Jan. 1
@@ -84,14 +80,20 @@ public class RealTimeFormatter {
         return ((year % 4 == 0) && 
                 ((year % 400 == 0) || (year % 100 != 0)));
     }
+    //Old Format:START
 	public Object oldFormat(RealTimeUser user) throws Exception{
 		Long timeZoneTime = Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()
 				+ user.getTimeZone().getRawOffset();
-		int time = (int) (((timeZoneTime / 1000) % 86400) / 3.6 - 6000);
+		
+		//                   |   millisec -> sec   |  time -> minecraft time  |
+		int time = (int) ( ( ( timeZoneTime / 1000 )  / 3.6 )  - 6000 % 24000 );
+		
 		Object packet = Class.forName(nms + "PacketPlayOutUpdateTime")
 				.getConstructor(long.class,long.class,boolean.class).newInstance(time, time,false);
+		
 		return packet;
 	}
+	//Old Format:END
 	public enum version{
 		NEW,
 		OLD;

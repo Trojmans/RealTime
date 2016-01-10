@@ -18,19 +18,20 @@ public class RealTimeUser {
 	private double latitude;
 	private double longitude;
 	private TimeZone timeZone;
+	private short debugCount = 8;
 	public RealTimeUser(String ip){
 		try{
-			if(ip.equals("127.0.0.1")){
-				JsonObject ipjson = readJSONFromURL("https://api.ipify.org?format=json").getAsJsonObject();
-				ip = a(ipjson.get("ip").toString());
+			String url = "http://geoplugin.net/json.gp?";
+			if(!ip.equals("127.0.0.1")){//localhost
+				url += "ip=" + ip;
 			}
-			JsonObject jo = readJSONFromURL("http://www.geoplugin.net/json.gp?ip=" + ip).getAsJsonObject();
+			JsonObject jo = readJSONFromURL(url).getAsJsonObject();
 			
 			latitude = Double.parseDouble(a(jo.get("geoplugin_latitude").toString()));
 			longitude = Double.parseDouble(a(jo.get("geoplugin_longitude").toString()));
 
 			String country = a(jo.get("geoplugin_countryCode").toString());
-			String region = a(jo.get("geoplugin_region").toString());
+			String region = a(jo.get("geoplugin_regionCode").toString());
 			
 			timeZone = TimeZone.getTimeZone(com.maxmind.geoip.timeZone.timeZoneByCountryAndRegion(country, region));
 						
@@ -52,7 +53,6 @@ public class RealTimeUser {
 			sb.append(charArray, 0, numCharsRead);
 		}
 		String result = sb.toString();
-		System.out.println(result);
 		return new JsonParser().parse(result);
 	}
 	private String a(String string){
@@ -99,5 +99,14 @@ public class RealTimeUser {
 	 */
 	 public Player getPlayer(){
 		 return RealTime.getPlugin().getUserManager().getPlayer(this);
+	 }
+	 /**
+	  * @return debugCount
+	  */
+	 public short getDebugCount(){
+		 return debugCount;
+	 }
+	 public void setDebugCount(short debugCount){
+		 this.debugCount = debugCount;
 	 }
 }

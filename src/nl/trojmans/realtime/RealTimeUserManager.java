@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class RealTimeUserManager implements Listener{
 	
@@ -15,6 +16,7 @@ public class RealTimeUserManager implements Listener{
 	public RealTimeUserManager(RealTime plugin){
 		users = new HashMap<Player,RealTimeUser>();
 		Bukkit.getPluginManager().registerEvents(this, plugin);
+
 		for(Player p : Bukkit.getOnlinePlayers()){
 			users.put(p, new RealTimeUser(p.getAddress().getHostName()));
 		}
@@ -37,6 +39,10 @@ public class RealTimeUserManager implements Listener{
 	@EventHandler(ignoreCancelled=false)
 	public void onPlayerLogin(PlayerLoginEvent e){
 		users.put(e.getPlayer(), new RealTimeUser(e.getAddress().getHostAddress()));
+	}
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent e){
+		users.remove(e.getPlayer());
 	}
 
 }
