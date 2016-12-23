@@ -11,7 +11,7 @@
   	<mainClass>${project.groupId}.${project.artifactId}</mainClass>
   	<spigotmc.version>1.8.8-R0.1-SNAPSHOT</spigotmc.version>
   	<geoip2.version>2.8.0</geoip2.version>
-  	<protocollib.version>3.6.5-SNAPSHOT</protocollib.version>
+  	<protocollib.version>4.2.0</protocollib.version>
   	<javacompiler.version>1.8</javacompiler.version>
   </properties>
   <build>
@@ -87,7 +87,7 @@
     </dependency>
     <dependency>
       <groupId>com.comphenix.protocol</groupId>
-      <artifactId>ProtocolLib-v1_7_R4</artifactId>
+      <artifactId>ProtocolLib-API</artifactId>
       <version>${protocollib.version}</version>
       <scope>provided</scope>
     </dependency>
