@@ -1,62 +1,39 @@
 package nl.trojmans.realtime;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.InetAddress;
 import java.util.TimeZone;
 
 import org.bukkit.entity.Player;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
 
 public class RealTimeUser {
 	
 	private double latitude;
 	private double longitude;
-	private TimeZone timeZone;
-	private short debugCount = 8;
-	public RealTimeUser(String ip){
+	private TimeZone tz;
+	public RealTimeUser(DatabaseReader database, String ip, RealTimeConfig config){
 		try{
-			String url = "http://geoplugin.net/json.gp?";
-			if(!ip.equals("127.0.0.1")){//localhost
-				url += "ip=" + ip;
+			InetAddress ipAddress = InetAddress.getByName(ip);
+			
+			if (database == null) {
+				tz = TimeZone.getTimeZone(timeZone.timeZoneByCountryAndRegion(null, null, config));
+				return;
 			}
-			JsonObject jo = readJSONFromURL(url).getAsJsonObject();
+			String country = database.city(ipAddress).getCountry().getIsoCode();
+			String region = database.city(ipAddress).getMostSpecificSubdivision().getIsoCode();
 			
-			latitude = Double.parseDouble(a(jo.get("geoplugin_latitude").toString()));
-			longitude = Double.parseDouble(a(jo.get("geoplugin_longitude").toString()));
-
-			String country = a(jo.get("geoplugin_countryCode").toString());
-			String region = a(jo.get("geoplugin_regionCode").toString());
-			
-			timeZone = TimeZone.getTimeZone(com.maxmind.geoip.timeZone.timeZoneByCountryAndRegion(country, region));
+			tz = TimeZone.getTimeZone(timeZone.timeZoneByCountryAndRegion(country, region, config));
 						
 		}catch(IOException ex){
-			
-			System.out.println("IOException in realtime plugin: " + ex.getMessage());
+			tz = TimeZone.getTimeZone(timeZone.timeZoneByCountryAndRegion(null, null, config));
+			System.out.println("[RealTime] Something went wrong while looking for IP (" + ip + ") in the Database:\n" + ex.getMessage());
+		}catch(GeoIp2Exception ex){
+			tz = TimeZone.getTimeZone(timeZone.timeZoneByCountryAndRegion(null, null, config));
+			System.out.println("[RealTime] " + ex.getMessage());
 		}
-	}
-	private JsonElement readJSONFromURL(String url) throws IOException{
-		URL webpageurl = new URL(url);
-		URLConnection urlConnection = webpageurl.openConnection();
-		InputStream is = urlConnection.getInputStream();
-		InputStreamReader isr = new InputStreamReader(is);
-
-		int numCharsRead;
-		char[] charArray = new char[1024];
-		StringBuffer sb = new StringBuffer();
-		while ((numCharsRead = isr.read(charArray)) > 0) {
-			sb.append(charArray, 0, numCharsRead);
-		}
-		String result = sb.toString();
-		return new JsonParser().parse(result);
-	}
-	private String a(String string){
-		return string.replaceAll(Character.toString('"'), "");
 	}
 	/**
 	 * @return the latitude
@@ -86,27 +63,18 @@ public class RealTimeUser {
 	 * @return the timeZone
 	 */
 	public TimeZone getTimeZone() {
-		return timeZone;
+		return tz;
 	}
 	/**
 	 * @param timeZone the timeZone to set
 	 */
 	public void setTimeZone(TimeZone timeZone) {
-		this.timeZone = timeZone;
+		this.tz = timeZone;
 	}
 	/**
 	 *@return the player
 	 */
 	 public Player getPlayer(){
 		 return RealTime.getPlugin().getUserManager().getPlayer(this);
-	 }
-	 /**
-	  * @return debugCount
-	  */
-	 public short getDebugCount(){
-		 return debugCount;
-	 }
-	 public void setDebugCount(short debugCount){
-		 this.debugCount = debugCount;
 	 }
 }
