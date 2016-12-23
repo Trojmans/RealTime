@@ -26,7 +26,7 @@ public class RealTime extends JavaPlugin{
 		realTimeConfig = new RealTimeConfig(this);
 		userManager = new RealTimeUserManager(this);
 		realTimePacketAdapter = new RealTimePacketAdapter(this);
-		dbFile = new File(getDataFolder().getAbsolutePath() + "\\GeoLite2.mmdb");
+		dbFile = new File(getDataFolder().getAbsolutePath() + File.separator + "GeoLite2.mmdb");
 
 		Bukkit.getPluginCommand("realtimereloadconfig").setExecutor(new RealTimeReloadConfigCommand());
 		System.out.println("[RealTime] This product includes GeoLite2 data created by MaxMind, available from http://www.maxmind.com.");
