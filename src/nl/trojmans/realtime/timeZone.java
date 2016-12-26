@@ -1,13 +1,14 @@
-package com.maxmind.geoip;
+package nl.trojmans.realtime;
+
 // generated automatically from admin/generate_timeZone.pl
 public class timeZone {
-    public static String timeZoneByCountryAndRegion(String country, String region) {
+    public static String timeZoneByCountryAndRegion(String country, String region, RealTimeConfig config) {
         String timezone = null;
         if (country == null) {
-            return null;
-        }
-        if (region == null) {
-            region = "";
+        	country = config.getFallbackCountry();
+        	if (region == null) {
+        		region = config.getFallbackRegion();
+        	}
         }
         if ("AD".equals(country)) {
                 timezone = "Europe/Andorra";

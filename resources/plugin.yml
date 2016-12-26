@@ -1,6 +1,6 @@
 name: RealTime
-version: 2.0
-description: sets the time in minecraft to the real time
+version: 3.0
+description: 'Shows user''s real time based on their IP'
 author: Trojmans
 main: nl.trojmans.realtime.RealTime
 softdepend: [ProtocolLib]
