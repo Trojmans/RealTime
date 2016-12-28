@@ -14,7 +14,6 @@ public class RealTimeConfig {
 	private FileConfiguration config;
 	private boolean inEveryWorldEnabled;
 	private List<String> enabledWorlds;
-	private RealTimeFormatter.version timeFormatVersion;
 	private String fallbackCountry;
 	private String fallbackRegion;
 	public boolean cache;
@@ -32,7 +31,6 @@ public class RealTimeConfig {
 		try{
 			inEveryWorldEnabled = config.getBoolean("inEveryWorldEnabled");
 			enabledWorlds = (List<String>) config.getList("enabledWorlds");
-			timeFormatVersion = RealTimeFormatter.version.valueOf(config.getString("timeFormatVersion"));
 			fallbackCountry = config.getString("fallbackCountry");
 			fallbackRegion = config.getString("fallbackRegion");
 			cache = config.getBoolean("cache");
@@ -50,9 +48,6 @@ public class RealTimeConfig {
 	}
 	public List<String> getEnabledWorlds(){
 		return enabledWorlds;
-	}
-	public RealTimeFormatter.version getTimeFormatVersion(){
-		return timeFormatVersion;
 	}
 	public String getFallbackCountry() {
 		return fallbackCountry;

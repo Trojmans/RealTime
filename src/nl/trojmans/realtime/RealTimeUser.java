@@ -11,12 +11,25 @@ import com.maxmind.geoip2.exception.GeoIp2Exception;
 
 public class RealTimeUser {
 	
+	
 	private double latitude;
 	private double longitude;
 	private TimeZone tz;
 	public RealTimeUser(DatabaseReader database, String ip, RealTimeConfig config){
 		try{
-			InetAddress ipAddress = InetAddress.getByName(ip);
+			InetAddress ipAddress = null;
+			
+			// If the player connects from localhost
+			if(ip.equalsIgnoreCase("127.0.0.1")){
+				try (java.util.Scanner s = new java.util.Scanner(new java.net.URL("https://api.ipify.org").openStream(), "UTF-8").useDelimiter("\\A")) {
+				    ipAddress = InetAddress.getByName(s.next());
+				} catch (java.io.IOException e) {
+				    e.printStackTrace();
+				}
+			// If the player doesn't connect from localhost
+			}else{
+				InetAddress.getByName(ip);
+			}
 			
 			if (database == null) {
 				tz = TimeZone.getTimeZone(timeZone.timeZoneByCountryAndRegion(null, null, config));
