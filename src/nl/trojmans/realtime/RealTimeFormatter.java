@@ -9,29 +9,39 @@ import org.bukkit.entity.Player;
 public class RealTimeFormatter {
 	
 	private String nms = "net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ".";
-	private AzimuthFormatter azimuthFormatter = new AzimuthFormatter();
 	
 	@SuppressWarnings("static-access")
-	public Object format(RealTimeUser user) throws Exception{
+	public Object format(RealTimeUser user, long worldTime) throws Exception{
 		Calendar cal = Calendar.getInstance();
-		Player player = user.getPlayer();
-		double altitude = azimuthFormatter.getAzimuth(user);
-		double time = ( ( (altitude) % 360) / 360 ) * 24000;
-		long worldTime = player.getWorld().getFullTime();
-		worldTime -= (worldTime % 192000);
-		worldTime += time;
-		int moonPhase = moonPhase(cal.get(cal.YEAR),cal.get(cal.MONTH),cal.get(cal.DAY_OF_MONTH));
+				
+		long timeZoneTime = Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()
+				+ user.getTimeZone().getRawOffset();
 		
-		worldTime += moonPhase * 24000;
+		int timeUntilMoonGoesThrougThe8Phases = 192000;
+		
+		long time = (long)  (timeZoneTime / 3600  - 6000) % 24000;
+		
+		worldTime -= worldTime % timeUntilMoonGoesThrougThe8Phases;
+
+		int moonPhase = moonPhase(cal.get(cal.YEAR),cal.get(cal.MONTH),cal.get(cal.DAY_OF_MONTH));
+		moonPhase += 4;// The moon phases apear in a different order than the function calculates
+		if (moonPhase > 7) moonPhase -= 8;
+		
+		time += moonPhase * 24000;
+		worldTime += time;
 		
 		Object packet = Class.forName(nms + "PacketPlayOutUpdateTime")
 				.getConstructor(long.class,long.class,boolean.class).newInstance(worldTime, (long) time,false);
 		
 		return packet;
 	}
+	
     private static final int    day_year[] = { -1, -1, 30, 58, 89, 119, 
         150, 180, 211, 241, 272, 
         303, 333 };
+ 
+    
+    
     public int  moonPhase(int year, int month, int day) {
         int             phase;          // Moon phase
         int             cent;           // Century number (1979 = 20)
@@ -41,7 +51,7 @@ public class RealTimeFormatter {
 
         if (month < 0 || month > 12) month = 0;     // Just in case
         diy = day + day_year[month];                // Day in the year
-        if ((month > 2) && this.isLeapYearP(year)) 
+        if ((month > 2) && this.isLeapYear(year)) 
             diy++;                                  // Leapyear fixup
         cent = (year / 100) + 1;                    // Century number
         golden = (year % 19) + 1;                   // Golden number
@@ -72,31 +82,13 @@ public class RealTimeFormatter {
                 result = 30;
                 break;
             case 2:
-                result = ( this.isLeapYearP(year) ? 29 : 28 );
+                result = ( this.isLeapYear(year) ? 29 : 28 );
         }
         return result; 
     }
-    public  boolean isLeapYearP(int year) {
+    public  boolean isLeapYear(int year) {
         return ((year % 4 == 0) && 
                 ((year % 400 == 0) || (year % 100 != 0)));
     }
-    //Old Format:START
-	public Object oldFormat(RealTimeUser user) throws Exception{
-		Long timeZoneTime = Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()
-				+ user.getTimeZone().getRawOffset();
-		
-		//                   |   millisec -> sec   |  time -> minecraft time  |
-		int time = (int) ( ( ( timeZoneTime / 1000 )  / 3.6 )  - 6000 % 24000 );
-		
-		Object packet = Class.forName(nms + "PacketPlayOutUpdateTime")
-				.getConstructor(long.class,long.class,boolean.class).newInstance(time, time,false);
-		
-		return packet;
-	}
-	//Old Format:END
-	public enum version{
-		NEW,
-		OLD;
-	}
 
 }

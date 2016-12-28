@@ -20,7 +20,6 @@ public class RealTimePacketAdapter extends PacketAdapter{
 		ProtocolLibrary.getProtocolManager().addPacketListener(this);
 	}
 	
-	@SuppressWarnings("static-access")
 	@Override
 	public void onPacketSending(PacketEvent e) {
 
@@ -42,8 +41,8 @@ public class RealTimePacketAdapter extends PacketAdapter{
 		
 		try{
 			
-			RealTimeFormatter.version version = plugin.getRealTimeConfig().getTimeFormatVersion();
-			Object packet = version == version.NEW ? format.format(user) : format.oldFormat(user);
+			Object packet = format.format(user, e.getPacket().getLongs().getValues().get(0));
+
 			e.getClass().getMethod("setPacket" , PacketContainer.class).invoke(
 					e,PacketContainer.class.getConstructor(PacketType.class, Object.class)
 					.newInstance(PacketType.Play.Server.UPDATE_TIME, packet));
