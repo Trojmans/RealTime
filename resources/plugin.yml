@@ -1,5 +1,5 @@
 name: RealTime
-version: 3.0
+version: 3.1
 description: 'Shows user''s real time based on their IP'
 author: Trojmans
 main: nl.trojmans.realtime.RealTime
