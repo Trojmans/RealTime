@@ -3,7 +3,7 @@
   <groupId>RealTime</groupId>
   <artifactId>RealTime</artifactId>
   <packaging>jar</packaging>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>3.1</version>
   <name>RealTime</name>
   <description>Shows user's real time based on their IP</description>
   <properties>

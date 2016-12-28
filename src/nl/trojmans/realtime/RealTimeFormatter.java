@@ -4,7 +4,6 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 public class RealTimeFormatter {
 	

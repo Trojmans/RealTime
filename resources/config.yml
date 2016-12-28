@@ -1,5 +1,4 @@
 inEveryWorldEnabled: true
 enabledWorlds: [world]
-fallbackCountry: IT
-fallbackRegion: ''
+fallbackTimeZone: Europe/Rome
 cache: true
