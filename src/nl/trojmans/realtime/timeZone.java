@@ -3,13 +3,7 @@ package nl.trojmans.realtime;
 // generated automatically from admin/generate_timeZone.pl
 public class timeZone {
     public static String timeZoneByCountryAndRegion(String country, String region, RealTimeConfig config) {
-        String timezone = null;
-        if (country == null) {
-        	country = config.getFallbackCountry();
-        	if (region == null) {
-        		region = config.getFallbackRegion();
-        	}
-        }
+        String timezone = config.getFallbackTimeZone();
         if ("AD".equals(country)) {
                 timezone = "Europe/Andorra";
         } else if ("AE".equals(country)) {

@@ -14,8 +14,7 @@ public class RealTimeConfig {
 	private FileConfiguration config;
 	private boolean inEveryWorldEnabled;
 	private List<String> enabledWorlds;
-	private String fallbackCountry;
-	private String fallbackRegion;
+	private String fallbackTimeZone;
 	public boolean cache;
 	public RealTimeConfig(RealTime plugin){
 		this.plugin = plugin;
@@ -31,8 +30,7 @@ public class RealTimeConfig {
 		try{
 			inEveryWorldEnabled = config.getBoolean("inEveryWorldEnabled");
 			enabledWorlds = (List<String>) config.getList("enabledWorlds");
-			fallbackCountry = config.getString("fallbackCountry");
-			fallbackRegion = config.getString("fallbackRegion");
+			fallbackTimeZone = config.getString("fallbackTimeZone");
 			cache = config.getBoolean("cache");
 			return true;
 		}catch(Exception e){//Config is invalid
@@ -49,11 +47,8 @@ public class RealTimeConfig {
 	public List<String> getEnabledWorlds(){
 		return enabledWorlds;
 	}
-	public String getFallbackCountry() {
-		return fallbackCountry;
-	}
-	public String getFallbackRegion() {
-		return fallbackRegion;
+	public String getFallbackTimeZone() {
+		return fallbackTimeZone;
 	}
 	public boolean getCache() {
 		return cache;
