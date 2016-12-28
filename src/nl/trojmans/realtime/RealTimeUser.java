@@ -2,6 +2,8 @@ package nl.trojmans.realtime;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URL;
+import java.util.Scanner;
 import java.util.TimeZone;
 
 import org.bukkit.entity.Player;
@@ -17,18 +19,15 @@ public class RealTimeUser {
 	private TimeZone tz;
 	public RealTimeUser(DatabaseReader database, String ip, RealTimeConfig config){
 		try{
-			InetAddress ipAddress = null;
+			InetAddress ipAddress = InetAddress.getByName(ip);
 			
 			// If the player connects from localhost
 			if(ip.equalsIgnoreCase("127.0.0.1")){
-				try (java.util.Scanner s = new java.util.Scanner(new java.net.URL("https://api.ipify.org").openStream(), "UTF-8").useDelimiter("\\A")) {
+				try (Scanner s = new Scanner(new URL("https://api.ipify.org").openStream(), "UTF-8").useDelimiter("\\A")) {
 				    ipAddress = InetAddress.getByName(s.next());
-				} catch (java.io.IOException e) {
+				} catch (IOException e) {
 				    e.printStackTrace();
 				}
-			// If the player doesn't connect from localhost
-			}else{
-				InetAddress.getByName(ip);
 			}
 			
 			if (database == null) {
